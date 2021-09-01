@@ -25,7 +25,10 @@ app.listen(port, () => {
     console.log(__dirname)
     console.log(`App is listening on port ${port}.`)
 })
-
+app.get('/', async(req, res) => {
+    console.log("Console is working")
+    res.send("App is working")
+})
 app.post('/upload-avatar', async(req, res) => {
     try {
         if(!req.files) {
