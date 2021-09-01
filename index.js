@@ -41,7 +41,7 @@ app.post('/upload-avatar', async(req, res) => {
 
             avatar.mv('./files/' + avatar.name)
             let filePath = __dirname + "/files/" + avatar.name
-            const fileHash = await addFile(avatar.name, filePath)
+            // const fileHash = await addFile(avatar.name, filePath)
             // console.log('IPFS Hash Value: ', fileHash)
             res.send({
                 status: true,
