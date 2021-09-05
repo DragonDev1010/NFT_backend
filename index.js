@@ -7,7 +7,10 @@ const _ = require('lodash')
 const {create} = require('ipfs-http-client')
 const fs = require('fs');
 
-const ipfs = create("http://localhost:5001")
+// const ipfs = create("http://localhost:5001")
+// const ipfs = create("http://172.31.12.231:5001")
+const ipfs = create("http://3.14.134.235:5001/")
+
 const app = express()
 
 app.use(fileUpload({
@@ -41,8 +44,8 @@ app.post('/upload-avatar', async(req, res) => {
 
             avatar.mv('./files/' + avatar.name)
             let filePath = __dirname + "/files/" + avatar.name
-            // const fileHash = await addFile(avatar.name, filePath)
-            // console.log('IPFS Hash Value: ', fileHash)
+            const fileHash = await addFile(avatar.name, filePath)
+            console.log('IPFS Hash Value: ', fileHash)
             res.send({
                 status: true,
                 message: 'File is upload',
