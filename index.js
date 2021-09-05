@@ -1,73 +1,41 @@
-const express = require('express')
-const fileUpload = require('express-fileupload')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const morgan = require('morgan')
-const _ = require('lodash')
-const {create} = require('ipfs-http-client')
-const fs = require('fs');
+const express = require("express");
+const fileUpload = require("express-fileupload");
+const cors = require("cors");
+const morgan = require("morgan");
+const { create } = require("ipfs-http-client");
 
 // const ipfs = create("http://localhost:5001")
 // const ipfs = create("http://172.31.12.231:5001")
-const ipfs = create("http://3.14.134.235:5001/")
+const ipfs = create("http://3.14.134.235:5001/");
 
-const app = express()
+const port = process.env.PORT || 3000;
 
-app.use(fileUpload({
-    createParentPath: true
-}))
+const app = express();
 
-app.use(cors())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(morgan('dev'))
+app.use(fileUpload({ createParentPath: true }));
 
-const port = process.env.PORT || 3000
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 
 app.listen(port, () => {
-    console.log(__dirname)
-    console.log(`App is listening on port ${port}.`)
-})
-app.get('/', async(req, res) => {
-    console.log("Console is working")
-    res.send("App is working")
-})
-app.post('/upload-avatar', async(req, res) => {
-    try {
-        if(!req.files) {
-            res.send({
-                status: false,
-                message: 'No file upload'
-            })
-        } else {
-            let avatar = req.files.avatar
+  console.log(`App is listening on port ${port}.`);
+});
 
-            avatar.mv('./files/' + avatar.name)
-            let filePath = __dirname + "/files/" + avatar.name
-            const fileHash = await addFile(avatar.name, filePath)
-            console.log('IPFS Hash Value: ', fileHash)
-            res.send({
-                status: true,
-                message: 'File is upload',
-                data: {
-                    name: avatar.name,
-                    mimetype: avatar.mimetype,
-                    size: avatar.size
-                }
-            })
-        } 
-    }catch(err) {
-        res.status(500).send(err)
+app.get("/", async (req, res) => {
+  res.status(200).json({ status: true, message: "OK" });
+});
+
+app.post("/upload-avatar", async (req, res) => {
+  try {
+    if (!req.files) {
+      return res.status(400).json({ status: false, message: "No file upload" });
     }
-})
-
-const addFile = async (fileName, filePath) => {
-    const file = fs.readFileSync(filePath)
-    const filesAdded = await ipfs.add(
-        {path: fileName, content: file},
-        {progress: (len) => console.log("uploading file ... " + len)}
-    )
-    console.log(filesAdded)
-    const fileHash = filesAdded.cid.toString
-    return fileHash
-}
+    let avatar = req.files.avatar;
+    const { cid } = await ipfs.add(avatar.data, { pin: true });
+    return res.status(200).json({ status: true, cid: cid.toString() });
+  } catch (err) {
+    return res.status(500).json({ status: false, message: err.message });
+  }
+});
