@@ -121,7 +121,7 @@ const width = 1000;
 // image height in pixels
 const height = 1000;
 // description for NFT in metadata file
-const description = "NFT Image generated at TendieSwap.";
+const description = "NFT generated at TendieSwap.";
 // base url to use in metadata file
 // the id of the nft will be added to this url, in the example e.g. https://hashlips/nft/1 for NFT with id 1
 const baseImageUri = "https://hashlips/nft";
